@@ -27,3 +27,6 @@ Temporary Items
 
 # Development files
 .esphome
+
+HomeDicator-test.yaml
+secrets.yaml
