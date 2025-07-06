@@ -1,0 +1,46 @@
+# Smart spinbox on_value helper with 10°F offset logic using Home Assistant service calls
+if:
+  condition:
+    lambda: |-
+      return id(user_is_interacting);
+  then:
+    - logger.log:
+        format: "Smart thermostat: Mode=%s, Target=%.1f"
+        args: ['id(mode_${hass_climate_id}).state.c_str()', 'static_cast<float>(x)']
+        level: DEBUG
+    - if:
+        condition:
+          lambda: |-
+            std::string mode = id(mode_${hass_climate_id}).state;
+            return mode == "heat";
+        then:
+          - homeassistant.action:
+              action: climate.set_temperature
+              data:
+                entity_id: climate.${hass_climate_id}
+                target_temp_low: !lambda 'return x;'
+                target_temp_high: !lambda 'return x + 10;'
+    - if:
+        condition:
+          lambda: |-
+            std::string mode = id(mode_${hass_climate_id}).state;
+            return mode == "cool";
+        then:
+          - homeassistant.action:
+              action: climate.set_temperature
+              data:
+                entity_id: climate.${hass_climate_id}
+                target_temp_low: !lambda 'return x - 10;'
+                target_temp_high: !lambda 'return x;'
+    - if:
+        condition:
+          lambda: |-
+            std::string mode = id(mode_${hass_climate_id}).state;
+            return mode == "heat_cool" || mode == "auto";
+        then:
+          - homeassistant.action:
+              action: climate.set_temperature
+              data:
+                entity_id: climate.${hass_climate_id}
+                target_temp_low: !lambda 'return x - 5;'
+                target_temp_high: !lambda 'return x + 5;'

@@ -1,0 +1,82 @@
+# Smart spinbox square tile with 10°F offset logic for dual-setpoint thermostats
+obj:
+  styles: info_or_button_tile
+  layout:
+    type: FLEX
+    flex_flow: COLUMN
+    flex_align_main: CENTER
+    flex_align_cross: CENTER
+    flex_align_track: CENTER
+    pad_row: 0
+  widgets:
+    - obj:
+        bg_opa: TRANSP
+        width: 205
+        pad_all: 0
+        layout:
+          type: FLEX
+          flex_flow: ROW
+          flex_align_main: CENTER
+          flex_align_cross: CENTER
+          flex_align_track: CENTER
+          pad_row: 0
+        widgets:
+          - button:
+              id: smart_spin_down_${hass_climate_id}
+              bg_color: 0x34b3ce
+              on_press:
+                then:
+                  - globals.set:
+                      id: user_is_interacting
+                      value: 'true'
+                  - lvgl.spinbox.decrement: lvgl_smart_spinbox_${hass_climate_id}
+              on_release:
+                then:
+                  - globals.set:
+                      id: user_is_interacting
+                      value: 'false'
+              widgets:
+                - label:
+                      text: "-"
+          - spinbox:
+              id: lvgl_smart_spinbox_${hass_climate_id}
+              align: CENTER
+              text_align: CENTER
+              bg_opa: TRANSP
+              border_width: 0
+              pad_all: 0
+              width: 50
+              text_font: libreFranklin32
+              text_color: ${color}
+              state:
+                disabled: true
+              range_from: ${min_value}
+              range_to: ${max_value}
+              value: ${min_value}
+              step: 1
+              rollover: false
+              digits: 2
+              decimal_places: 0
+              on_value: !include helpers/smart_spinbox_on_value.yaml
+          - button:
+              id: smart_spin_up_${hass_climate_id}
+              bg_color: 0xc84545
+              on_press:
+                then:
+                  - globals.set:
+                      id: user_is_interacting
+                      value: 'true'
+                  - lvgl.spinbox.increment: lvgl_smart_spinbox_${hass_climate_id}
+              on_release:
+                then:
+                  - globals.set:
+                      id: user_is_interacting
+                      value: 'false'
+              widgets:
+                - label:
+                    text: "+"
+    - label:
+        text_align: CENTER
+        styles: info_or_button_tile_subtitle
+        text: ${title}
+        text_font: libreFranklin10

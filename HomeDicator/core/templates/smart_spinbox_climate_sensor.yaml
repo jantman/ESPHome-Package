@@ -1,0 +1,41 @@
+# Smart spinbox climate sensor with 10°F offset logic for dual-setpoint thermostats
+# This template creates a single sensor that monitors the appropriate setpoint based on mode
+platform: homeassistant
+id: ${hass_climate_id}_smart_setpoint
+entity_id: climate.${hass_climate_id}
+attribute: target_temp_low  # We'll use target_temp_low as the primary, but logic will handle both
+on_value:
+  - lvgl.widget.update:
+      id: lvgl_smart_spinbox_${hass_climate_id}
+      state:
+        disabled: false
+  - if:
+     condition:
+       lambda: |-
+         return !id(user_is_interacting);
+     then:
+      - lambda: |-
+          // Get current mode and both setpoints
+          std::string mode = id(mode_${hass_climate_id}).state;
+          float heat_temp = id(${hass_climate_id}_smart_setpoint).state;
+          
+          // Get the high setpoint separately
+          auto high_sensor = id(${hass_climate_id}_cool_setpoint);
+          float cool_temp = high_sensor->state;
+          
+          // Update spinbox based on mode
+          auto call = id(lvgl_smart_spinbox_${hass_climate_id})->make_call();
+          
+          if (mode == "heat") {
+            call.set_value(heat_temp);
+          } else if (mode == "cool") {
+            if (!isnan(cool_temp)) {
+              call.set_value(cool_temp);
+            }
+          } else if (mode == "heat_cool" || mode == "auto") {
+            // Show average of both setpoints
+            if (!isnan(cool_temp) && !isnan(heat_temp)) {
+              call.set_value((heat_temp + cool_temp) / 2.0);
+            }
+          }
+          call.perform();
