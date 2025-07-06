@@ -3,7 +3,7 @@
 platform: homeassistant
 id: ${hass_climate_id}_smart_setpoint
 entity_id: climate.${hass_climate_id}
-attribute: target_temp_low  # We'll use target_temp_low as the primary, but logic will handle both
+attribute: temperature  # Monitor current temperature to trigger updates when setpoints change
 on_value:
   - lvgl.widget.update:
       id: lvgl_smart_spinbox_${hass_climate_id}
@@ -17,13 +17,10 @@ on_value:
       - lvgl.spinbox.update:
           id: lvgl_smart_spinbox_${hass_climate_id}
           value: !lambda |-
-            // Get current mode and both setpoints
+            // Get current mode and both setpoints from HA sensors
             std::string mode = id(mode_${hass_climate_id}).state;
-            float heat_temp = id(${hass_climate_id}_smart_setpoint).state;
-            
-            // Get the high setpoint separately
-            auto high_sensor = id(${hass_climate_id}_cool_setpoint);
-            float cool_temp = high_sensor->state;
+            float heat_temp = id(${hass_climate_id}_heat_setpoint).state;
+            float cool_temp = id(${hass_climate_id}_cool_setpoint).state;
             
             // Return appropriate value based on mode
             if (mode == "heat") {
