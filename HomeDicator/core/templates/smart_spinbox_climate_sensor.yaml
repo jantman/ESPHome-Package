@@ -14,28 +14,29 @@ on_value:
        lambda: |-
          return !id(user_is_interacting);
      then:
-      - lambda: |-
-          // Get current mode and both setpoints
-          std::string mode = id(mode_${hass_climate_id}).state;
-          float heat_temp = id(${hass_climate_id}_smart_setpoint).state;
-          
-          // Get the high setpoint separately
-          auto high_sensor = id(${hass_climate_id}_cool_setpoint);
-          float cool_temp = high_sensor->state;
-          
-          // Update spinbox based on mode
-          auto call = id(lvgl_smart_spinbox_${hass_climate_id})->make_call();
-          
-          if (mode == "heat") {
-            call.set_value(heat_temp);
-          } else if (mode == "cool") {
-            if (!isnan(cool_temp)) {
-              call.set_value(cool_temp);
+      - lvgl.spinbox.update:
+          id: lvgl_smart_spinbox_${hass_climate_id}
+          value: !lambda |-
+            // Get current mode and both setpoints
+            std::string mode = id(mode_${hass_climate_id}).state;
+            float heat_temp = id(${hass_climate_id}_smart_setpoint).state;
+            
+            // Get the high setpoint separately
+            auto high_sensor = id(${hass_climate_id}_cool_setpoint);
+            float cool_temp = high_sensor->state;
+            
+            // Return appropriate value based on mode
+            if (mode == "heat") {
+              return heat_temp;
+            } else if (mode == "cool") {
+              if (!isnan(cool_temp)) {
+                return cool_temp;
+              }
+            } else if (mode == "heat_cool" || mode == "auto") {
+              // Show average of both setpoints
+              if (!isnan(cool_temp) && !isnan(heat_temp)) {
+                return (heat_temp + cool_temp) / 2.0;
+              }
             }
-          } else if (mode == "heat_cool" || mode == "auto") {
-            // Show average of both setpoints
-            if (!isnan(cool_temp) && !isnan(heat_temp)) {
-              call.set_value((heat_temp + cool_temp) / 2.0);
-            }
-          }
-          call.perform();
+            // Default fallback
+            return heat_temp;
