@@ -1,9 +1,9 @@
 # Smart spinbox climate sensor with 10°F offset logic for dual-setpoint thermostats
-# This template creates a single sensor that monitors the appropriate setpoint based on mode
+# This template creates a single sensor that monitors the mode to get proper initial values
 platform: homeassistant
 id: ${hass_climate_id}_smart_setpoint
 entity_id: climate.${hass_climate_id}
-attribute: temperature  # Monitor current temperature to trigger updates when setpoints change
+attribute: hvac_mode  # Monitor mode changes to update display appropriately
 on_value:
   - lvgl.widget.update:
       id: lvgl_smart_spinbox_${hass_climate_id}
@@ -17,23 +17,32 @@ on_value:
       - lvgl.spinbox.update:
           id: lvgl_smart_spinbox_${hass_climate_id}
           value: !lambda |-
-            // Get current mode and both setpoints from HA sensors
-            std::string mode = id(mode_${hass_climate_id}).state;
-            float heat_temp = id(${hass_climate_id}_heat_setpoint).state;
-            float cool_temp = id(${hass_climate_id}_cool_setpoint).state;
+            // Get current mode from the mode text sensor
+            std::string mode = "unknown";
+            if (id(mode_${hass_climate_id}).has_state()) {
+              mode = id(mode_${hass_climate_id}).state;
+            }
+            
+            // Get setpoints from HA sensors if they exist, otherwise use entity attributes directly
+            float heat_temp = 70.0;  // Default fallback
+            float cool_temp = 75.0;  // Default fallback
+            
+            if (id(${hass_climate_id}_heat_setpoint).has_state()) {
+              heat_temp = id(${hass_climate_id}_heat_setpoint).state;
+            }
+            
+            if (id(${hass_climate_id}_cool_setpoint).has_state()) {
+              cool_temp = id(${hass_climate_id}_cool_setpoint).state;
+            }
             
             // Return appropriate value based on mode
             if (mode == "heat") {
               return heat_temp;
             } else if (mode == "cool") {
-              if (!isnan(cool_temp)) {
-                return cool_temp;
-              }
+              return cool_temp;
             } else if (mode == "heat_cool" || mode == "auto") {
               // Show average of both setpoints
-              if (!isnan(cool_temp) && !isnan(heat_temp)) {
-                return (heat_temp + cool_temp) / 2.0;
-              }
+              return (heat_temp + cool_temp) / 2.0;
             }
             // Default fallback
             return heat_temp;
