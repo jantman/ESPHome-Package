@@ -1,9 +1,9 @@
 # Smart spinbox climate sensor with 10°F offset logic for dual-setpoint thermostats
-# This template creates a single sensor that monitors the mode to get proper initial values
+# This template creates a single sensor that monitors the current temperature to trigger updates
 platform: homeassistant
 id: ${hass_climate_id}_smart_setpoint
 entity_id: climate.${hass_climate_id}
-attribute: hvac_mode  # Monitor mode changes to update display appropriately
+attribute: temperature  # Monitor current temperature to ensure we get regular updates
 on_value:
   - lvgl.widget.update:
       id: lvgl_smart_spinbox_${hass_climate_id}
