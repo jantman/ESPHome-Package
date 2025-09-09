@@ -205,6 +205,7 @@ font:
       "\U000F0D38", # mdi:speaker-multiple
       "\U000F04C8", # mdi:spotlight
       "\U000F04C9", # mdi:spotlight-beam
+      "\U000F105F", # mdi:sprinkler
       "\U000F04CD", # mdi:stairs
       "\U000F12BE", # mdi:stairs-down
       "\U000F12BD", # mdi:stairs-up
