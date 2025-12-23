@@ -52,7 +52,7 @@ obj:
               range_from: ${min_value}
               range_to: ${max_value}
               value: ${min_value}
-              step: 1
+              selected_digit: 1
               rollover: false
               digits: 2
               decimal_places: 0
