@@ -11,3 +11,6 @@ obj:
     flex_flow: ROW
     flex_align_main: CENTER
     flex_align_cross: CENTER
+  widgets:
+    - container:
+        hidden: true
