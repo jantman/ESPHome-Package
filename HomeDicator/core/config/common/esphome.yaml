@@ -44,6 +44,11 @@ api:
   encryption:
     key: ${api_key}
   on_client_connected:
+    - logger.log:
+        format: "Client %s connected to API with IP %s"
+        args: ["client_info.c_str()", "client_address.c_str()"]
+        level: INFO
+        tag: "native-api"
     - if:
         condition:
           - lambda: |-
@@ -52,6 +57,11 @@ api:
           - delay: 2s # So all sensors can load their values
           - lvgl.widget.hide: connecting_view
   on_client_disconnected:
+    - logger.log:
+        format: "Client %s disconnected from API with IP %s"
+        args: ["client_info.c_str()", "client_address.c_str()"]
+        level: INFO
+        tag: "native-api"
     - if:
         condition:
           - lambda: |-
