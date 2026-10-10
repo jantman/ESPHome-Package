@@ -11,6 +11,12 @@ esp32:
       CONFIG_SPIRAM_FETCH_INSTRUCTIONS: y
       CONFIG_SPIRAM_RODATA: y
       CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG: n # Disable to use PIN 19,20 as UART to RP2040
+# USB-Serial-JTAG is off (GPIO19/20 are the RP2040 UART), so the logger must not
+# default to it: on ESP-IDF builds since ESPHome 2026.9 that fails to link
+# (undefined usb_serial_jtag_vfs_*). Serial logging is disabled; API logs still work.
+logger:
+  hardware_uart: UART0
+  baud_rate: 0
 psram:
   mode: octal
   speed: 80MHz
