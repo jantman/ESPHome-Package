@@ -108,7 +108,6 @@ bluetooth_proxy:
 
 ota:
   - platform: esphome
-    password: ${ota_key}
 
 wifi:
   ssid: ${wifi_ssid}
