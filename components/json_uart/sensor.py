@@ -3,6 +3,9 @@ import esphome.config_validation as cv
 from esphome.components import sensor as sensor_component, uart
 from esphome.const import UNIT_EMPTY, ICON_EMPTY
 
+DEPENDENCIES = ["uart"]
+AUTO_LOAD = ["json"]
+
 json_uart_ns = cg.esphome_ns.namespace("json_uart")
 
 JsonUartSensor = json_uart_ns.class_("JsonUartSensor", sensor_component.Sensor, cg.PollingComponent, uart.UARTDevice)

@@ -35,5 +35,3 @@ lvgl:
 <<: !include core/config/common/time.yaml
 <<: !include core/config/common/select.yaml
 <<: !include core/config/common/globals.yaml
-<<: !include core/config/common/http_request.yaml
-<<: !include core/config/common/interval.yaml
