@@ -1,4 +1,4 @@
-# Smart spinbox square tile with 10°F offset logic for dual-setpoint thermostats
+# Smart spinbox square tile for dual-setpoint thermostats
 obj:
   styles: info_or_button_tile
   layout:

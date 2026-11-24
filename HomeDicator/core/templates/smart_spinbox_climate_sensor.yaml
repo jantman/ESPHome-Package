@@ -1,4 +1,4 @@
-# Smart spinbox climate sensor with 10°F offset logic for dual-setpoint thermostats
+# Smart spinbox climate sensor for dual-setpoint thermostats
 # This template creates a single sensor that monitors the current temperature to trigger updates
 platform: homeassistant
 id: ${hass_climate_id}_smart_setpoint

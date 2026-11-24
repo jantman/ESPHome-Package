@@ -1,4 +1,11 @@
-# Smart spinbox on_value helper with 10°F offset logic using Home Assistant service calls
+# Smart spinbox on_value helper for dual-setpoint thermostats, using Home Assistant service calls.
+#
+# In heat or cool mode, the chosen value is written to BOTH setpoints. The screen shows only
+# the setpoint for the current mode, so anything else written to the other one is invisible
+# here, and only takes effect at the next mode change. An earlier version wrote the other
+# setpoint as x +/- 10, which left zones cooling to 79-80F (or heating to 62F) after an
+# automatic heat/cool changeover days later. heat_cool/auto keeps a +/- 5 band, because equal
+# setpoints there would swap between heating and cooling within the deadband.
 if:
   condition:
     lambda: |-
@@ -19,7 +26,7 @@ if:
               data:
                 entity_id: climate.${hass_climate_id}
                 target_temp_low: !lambda 'return x;'
-                target_temp_high: !lambda 'return x + 10;'
+                target_temp_high: !lambda 'return x;'
     - if:
         condition:
           lambda: |-
@@ -30,7 +37,7 @@ if:
               action: climate.set_temperature
               data:
                 entity_id: climate.${hass_climate_id}
-                target_temp_low: !lambda 'return x - 10;'
+                target_temp_low: !lambda 'return x;'
                 target_temp_high: !lambda 'return x;'
     - if:
         condition:
